@@ -1,0 +1,5 @@
+openai-whisper
+pyannote.audio
+presidio_analyzer
+presidio_anonymizer
+
