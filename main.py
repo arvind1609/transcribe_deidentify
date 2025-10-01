@@ -104,6 +104,40 @@ def anonymize_with_map(pii_map, text, entity_type=None):
     return pii_map.get(text, "UNKNOWN")
 
 
+def transcript_deidentifcation(save_dir):
+    print(f"Applying de-identification...")
+    analyzer = AnalyzerEngine()
+    anonymizer = AnonymizerEngine()
+    for transcript in os.listdir(save_dir):
+        with open(os.path.join(save_dir, transcript), "r") as f:
+            content = f.read()
+
+        analyzer_results = analyzer.analyze(
+            text=content, language="en", allow_list=["SPEAKER_00", "SPEAKER_01"]
+        )
+        analyzer_results = [
+            result for result in analyzer_results if result.entity_type != "DATE_TIME"
+        ]
+        pii_map = get_unique_entities(content, analyzer_results)
+        anonymized_result = anonymizer.anonymize(
+            text=content,
+            analyzer_results=analyzer_results,
+            operators={
+                "DEFAULT": OperatorConfig(
+                    "custom",
+                    {
+                        "lambda": lambda text, entity_type=None: anonymize_with_map(
+                            pii_map, text, entity_type
+                        )
+                    },
+                )
+            },
+        )
+
+        with open(os.path.join(save_dir, transcript), "w", encoding="utf-8") as f:
+            f.writelines(anonymized_result.text)
+
+
 if __name__ == "__main__":
 
     parser = argparse.ArgumentParser()
@@ -142,35 +176,5 @@ if __name__ == "__main__":
             output_file_path=os.path.join(args.save_dir, f"{file.split('.')[0]}.txt"),
         )
 
-    print(f"Applying de-identification...")
-    analyzer = AnalyzerEngine()
-    anonymizer = AnonymizerEngine()
-
-    for transcript in os.listdir(args.save_dir):
-        with open(os.path.join(args.save_dir, transcript), "r") as f:
-            content = f.read()
-
-        analyzer_results = analyzer.analyze(
-            text=content, language="en", allow_list=["SPEAKER_00", "SPEAKER_01"]
-        )
-        analyzer_results = [
-            result for result in analyzer_results if result.entity_type != "DATE_TIME"
-        ]
-        pii_map = get_unique_entities(content, analyzer_results)
-        anonymized_result = anonymizer.anonymize(
-            text=content,
-            analyzer_results=analyzer_results,
-            operators={
-                "DEFAULT": OperatorConfig(
-                    "custom",
-                    {
-                        "lambda": lambda text, entity_type=None: anonymize_with_map(
-                            pii_map, text, entity_type
-                        )
-                    },
-                )
-            },
-        )
-
-        with open(os.path.join(args.save_dir, transcript), "w", encoding="utf-8") as f:
-            f.writelines(anonymized_result.text)
+    # Apply Deidentification to all transcripts in save_dir
+    transcript_deidentifcation(args.save_dir)
