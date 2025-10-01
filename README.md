@@ -31,3 +31,15 @@ For other OS, visit the [official website](https://www.ffmpeg.org/download.html)
 3. Install necessary packages: ```pip install -r requirements.txt``` 
 
 ## How to use
+
+#### Convert audio files to .mp3
+1. Go to ```convert.sh``` and change directory path in line 3 to the directory with audio files. 
+2. Run ```convert.sh```
+
+#### Running the main script 
+1. The main script requires three command line arguments: (1) HuggingFace token, (2) Directory with audio files, and (3) Directory to save the transcripts. 
+
+2. Run the main script:
+```
+python main.py --hf_token="<insert_your_hugginface_token>" --audio_dir="<path_to_audio_file>" --save_dir="<path_to_save_transcripts>"
+```
