@@ -15,7 +15,7 @@ from presidio_anonymizer.entities import OperatorConfig
 from collections import defaultdict
 
 _WHISPER_MODEL_NAME = "turbo"
-_DEVICE = "cuda:3" if torch.cuda.is_available() else "cpu"
+_DEVICE = "cuda" if torch.cuda.is_available() else "cpu"
 
 torch.backends.cuda.matmul.allow_tf32 = True
 torch.backends.cudnn.allow_tf32 = True
