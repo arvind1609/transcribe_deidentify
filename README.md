@@ -17,7 +17,7 @@ On huggingface perform the following tasks:
 1. Install ffmpeg on your machine. For Ubuntu or Linux based systems, run the following commands:
 ```
 sudo apt-get update
-sudo apt-get ffmpeg
+sudo apt-get install ffmpeg
 ```
 
 For other OS, visit the [official website](https://www.ffmpeg.org/download.html).
